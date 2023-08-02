@@ -4,7 +4,7 @@ const Doctor = require('../models/doctor');
 const transporter = require('../utils/emailHelper');
 const Notification = require('../models/notification');
 const Admin = require('../models/admin');
-
+let newDoctor;
 
 const registerDoctor = async (req, res) => {
     const { name, email, password } = req.body;
@@ -32,18 +32,25 @@ const registerDoctor = async (req, res) => {
                 }
             );
 
-            const newDoctor = await Doctor.create({
+            // const newDoctor = await Doctor.create({
+            //     name: name,
+            //     email: email,
+            //     password: hashPassword ,
+            //     verifyToken: token
+            // })
+
+                newDoctor = new Doctor({
                 name: name,
                 email: email,
-                password: hashPassword ,
+                password: hashPassword,
                 verifyToken: token
-            })
+            });
 
             const mailOptions = {
                 from: 'admin@gmail.com',
                 to: `${email}`,
                 subject: 'Email Verification',
-                text: `Hi! There, You have recently visited our website and entered your email.Please follow the given link to verify your email https://doccure-rouge.vercel.app/doctor/verify/${token}
+                text: `Hi! There, You have recently visited our website and entered your email.Please follow the given link to verify your email http://localhost:4000/doctor/verify/${token}
                 Link will expire in 5 minutes`
             };
 

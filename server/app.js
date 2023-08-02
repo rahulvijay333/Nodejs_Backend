@@ -13,7 +13,7 @@ let { connectDB } = require('./db/connection');
 
 // cors
 const cors = require('cors');
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+app.use(cors());
 
 // parsing the cookies
 const cookieParser = require('cookie-parser');
@@ -60,7 +60,7 @@ app.use('/api/notification', notificationRoutes);
 const connect = async () => {
   try {
     await connectDB();
-    let server = app.listen(PORT, () => {
+    let server = app.listen(PORT,() => {
       console.log(`App is running @ ${PORT}`)
     })
     return server;

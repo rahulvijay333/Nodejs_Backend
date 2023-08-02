@@ -10,7 +10,9 @@ const { isLoggedIn, isPatient } = require('../middlewares/authMiddleware');
 // const Patient = require('../models/patient');
 // const { cloudinary } = require('../utils/cloudinaryHelper');
 
-const { updatePatientProfile, getAllDoctors, getMyAppointments, likeHandler, ratingHandler, commentHandler } = require('../controllers/patientController');
+//add here ---------------------------custom
+
+const { updatePatientProfile, getAllDoctors, getMyAppointments, likeHandler, ratingHandler, commentHandler, getPatientDetails} = require('../controllers/patientController');
 
 
 router.put('/profile/update', isLoggedIn, isPatient, updatePatientProfile)
@@ -24,6 +26,8 @@ router.put('/doctor/:id/like', isLoggedIn, isPatient, likeHandler)
 router.put('/doctor/:id/rating', isLoggedIn, isPatient, ratingHandler)
 
 router.put('/doctor/:id/comment', isLoggedIn , isPatient , commentHandler)
+
+router.get('/profile/details/:id',getPatientDetails )
 
 // router.get('/doctor/:id/comment', isLoggedIn, isPatient, async (req, res) => {
 //     const { id } = req.params;

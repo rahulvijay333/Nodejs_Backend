@@ -74,6 +74,7 @@ const initiateAppointment = async (req, res) => {
         res.json({ order });
         
     } catch (error) {
+      console.log(error)
         res.status(500).json({ error: 'An error occurred while creating the appointment.' });
   }
 }

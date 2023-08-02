@@ -43,7 +43,7 @@ const registerPatient = async (req, res) => {
                 from: 'admin@gmail.com',
                 to: `${email}`,
                 subject: 'Email Verification',
-                text: `Hi! There, You have recently visited our website and entered your email.Please follow the given link to verify your email https://doccure-rouge.vercel.app/patient/verify/${token}
+                text: `Hi! There, You have recently visited our website and entered your email.Please follow the given link to verify your email http://localhost:4000/patient/verify/${token}
                 Link will expire in 5 minutes`
             };
 
@@ -123,17 +123,17 @@ const loginPatient  = async (req, res) => {
         if (patient) {
 
 
-            if (!patient.isVerified) {
-                return res.status(401).json({
-                    errorInfo: 'Email is not verified'
-                }) 
-            }
+            // if (!patient.isVerified) {
+            //     return res.status(401).json({
+            //         errorInfo: 'Email is not verified'
+            //     }) 
+            // }
 
-            if (!patient.isAdminVerified) {
-                return res.status(401).json({
-                    errorInfo: 'Admin verification required'
-                })
-            }
+            // if (!patient.isAdminVerified) {
+            //     return res.status(401).json({
+            //         errorInfo: 'Admin verification required'
+            //     })
+            // }
 
             let isCorrectPassword = await bcrypt.compare(password, patient.password);
             if (isCorrectPassword) {
@@ -214,7 +214,7 @@ const resetPasswordPatient = async (req, res) => {
                 from: 'admin@gmail.com',
                 to: `${email}`,
                 subject: 'Password reset',
-                text: `Hi! Please follow the given link to change your password http://localhost:3000/patient/reset/password/${token}`
+                text: `Hi! Please follow the given link to change your password http://localhost:4000/patient/reset/password/${token}`
             };
 
             await transporter.sendMail(mailOptions);
