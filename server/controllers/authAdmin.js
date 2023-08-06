@@ -23,7 +23,7 @@ const adminLogin = async (req, res) => {
                     process.env.SECRET_KEY,
                     
                     {
-                        expiresIn: "2h"
+                        expiresIn: "30d"
                     }
 
                 );
