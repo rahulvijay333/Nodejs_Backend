@@ -8,6 +8,38 @@ const Appointment = require('../models/appointment');
 
 
 
+// custom function created to fetch doctors details by giving id
+
+const getDoctorDetailsByAdmin = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const doctor = await Doctor.findOne({ _id: id });
+        if (!doctor) {
+            return res.status(401).json({ errorInfo: 'Doctor not found' });
+        }
+        res.status(200).json({ doctor });
+    } catch (err) {
+        
+        res.status(500).json({ errorInfo: 'Internal Server Error' });
+    }
+};
+
+const getPatientDetailsByAdmin = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const doctor = await Patient.findOne({ _id: id });
+        if (!doctor) {
+            return res.status(401).json({ errorInfo: 'Patient not found' });
+        }
+        res.status(200).json({ doctor });
+    } catch (err) {
+        
+        res.status(500).json({ errorInfo: 'Internal Server Error' });
+    }
+};
+
+
+
 
 const adminGetAllDoctors = async (req, res) => {
     
@@ -601,5 +633,7 @@ module.exports = {
     getSpeciality,
     getAllAppointments,
     getDashboardDetails,
-    getChartDetails
+    getChartDetails,
+    getDoctorDetailsByAdmin,
+    getPatientDetailsByAdmin
 } 

@@ -12,29 +12,34 @@ const { isLoggedIn, isAdmin } = require('../middlewares/authMiddleware');
 
 
 
-const { adminGetAllDoctors, adminDoctorApproval, adminGetAllPatients, approvePatients, adminAddSpeciality, adminEditSpeciality, adminRemoveSpeciality, getSpeciality, getAllAppointments , getChartDetails , getDashboardDetails } = require('../controllers/adminController');
+const { adminGetAllDoctors, adminDoctorApproval, adminGetAllPatients, approvePatients, adminAddSpeciality, adminEditSpeciality, adminRemoveSpeciality, getSpeciality, getAllAppointments, getChartDetails, getDashboardDetails, getDoctorDetailsByAdmin, getPatientDetailsByAdmin } = require('../controllers/adminController');
 
-router.get('/get/doctors', isLoggedIn , isAdmin , adminGetAllDoctors)
+router.get('/get/doctors', isLoggedIn, isAdmin, adminGetAllDoctors)
 
 router.put('/doctor/status/:id', isLoggedIn, isAdmin, adminDoctorApproval)
 
 router.get('/get/patients', isLoggedIn, isAdmin, adminGetAllPatients);
 
-router.put('/patient/status/:id', isLoggedIn ,isAdmin, approvePatients)
+router.put('/patient/status/:id', isLoggedIn, isAdmin, approvePatients)
 
-router.post('/add/speciality', isLoggedIn , isAdmin , adminAddSpeciality)
+router.post('/add/speciality', isLoggedIn, isAdmin, adminAddSpeciality)
 
-router.put('/edit/speciality/:id', isLoggedIn , isAdmin , adminEditSpeciality)
+router.put('/edit/speciality/:id', isLoggedIn, isAdmin, adminEditSpeciality)
 
-router.put('/speciality/status/:id', isLoggedIn , isAdmin , adminRemoveSpeciality)
+router.put('/speciality/status/:id', isLoggedIn, isAdmin, adminRemoveSpeciality)
 
-router.get('/get/specialities', isLoggedIn , isAdmin , getSpeciality);
+router.get('/get/specialities', isLoggedIn, isAdmin, getSpeciality);
 
 router.get('/get/appointments', isLoggedIn, isAdmin, getAllAppointments);
 
-router.get('/get/dashboard',isLoggedIn , isAdmin , getDashboardDetails)
+router.get('/get/dashboard', isLoggedIn, isAdmin, getDashboardDetails)
 
-router.get('/get/chartdetails',isLoggedIn , isAdmin, getChartDetails)
+router.get('/get/chartdetails', isLoggedIn, isAdmin, getChartDetails)
+
+router.get('/get/getdoctordetailsbyid/:id', isLoggedIn, isAdmin, getDoctorDetailsByAdmin)
+
+
+router.get('/get/getpatientdetailsbyid/:id', isLoggedIn, isAdmin, getPatientDetailsByAdmin)
 
 module.exports = router;
 
