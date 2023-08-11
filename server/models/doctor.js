@@ -1,148 +1,154 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const slotSchema = new mongoose.Schema({
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: true },
-  status: { type: String, default: false }
+  status: { type: String, default: false },
 });
 
 const doctorSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   password: {
     type: String,
-    required: true
-  }, 
+    required: true,
+  },
   verifyToken: {
     type: String,
   },
   speciality: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Speciality'
-  } ,
+    ref: "Speciality",
+  },
+  otp: {
+    type: Number,
+  },
+  otpExpiry: {
+    type: Date,
+  },
   profilePicture: {
-        public_id: {
-          type: String
-        } , 
-        secure_url: {
-          type: String
-        }
+    public_id: {
+      type: String,
+    },
+    secure_url: {
+      type: String,
+    },
   },
   certificate: {
-        public_id: {
-          type: String
-        } , 
-        secure_url: {
-          type: String
-        }
+    public_id: {
+      type: String,
+    },
+    secure_url: {
+      type: String,
+    },
   },
   services: [
     {
-       type: String
-    }
-  ] ,
+      type: String,
+    },
+  ],
   isVerified: {
-    type: Boolean ,
-    default: false
+    type: Boolean,
+    default: false,
   },
   isAdminVerified: {
     type: Boolean,
-    default: false
-  } ,
+    default: false,
+  },
   address: {
-      houseName: {
-        type: String 
-      },
-      city: {
-        type: String
-      },
-      state: {
-        type: String
-      }
+    houseName: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
   },
   gender: {
-      type: String
+    type: String,
   },
   phone: {
-      type: String,
+    type: String,
   },
   qualification: {
-    type: String
-  } ,
+    type: String,
+  },
   fullName: {
-      type: String, 
+    type: String,
   },
   forgotPasswordToken: {
-    type: String
+    type: String,
   },
   role: {
     type: String,
-    default: 'doctor'
+    default: "doctor",
   },
   likes: {
-     number: {
-       type: Number
-     },
-     user: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Patient'
-        }
-     ]
+    number: {
+      type: Number,
+    },
+    user: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Patient",
+      },
+    ],
   },
   ratings: {
-     number: {
-       type: Number
-     },
-     user: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Patient'
-        }
-     ]
+    number: {
+      type: Number,
+    },
+    user: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Patient",
+      },
+    ],
   },
   comments: [
     {
-       user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Patient'
-       },
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Patient",
+      },
       comment: {
-         type: String
-       }
-    }
-  ] ,
+        type: String,
+      },
+    },
+  ],
   token: {
-    type:  String
-  } ,
+    type: String,
+  },
   availableSlots: [
     {
       date: Date,
       slots: [
         {
           startTime: {
-            type: String
+            type: String,
           },
           endTime: {
-            type: String
+            type: String,
           },
           status: {
             type: Boolean,
-            default: false
-          }
-        }
-      ]
-    }
-  ]
+            default: false,
+          },
+        },
+      ],
+    },
+  ],
 });
 
-const Doctor = mongoose.model('Doctor', doctorSchema);
+const Doctor = mongoose.model("Doctor", doctorSchema);
 
 module.exports = Doctor;

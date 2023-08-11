@@ -19,6 +19,7 @@ const isLoggedIn = (req,res , next) => {
         next()
 
     } catch(e) {
+        console.log(e)
         return res.status(401).json({
             message: 'Invalid Token'
         })
@@ -37,11 +38,11 @@ const isDoctor = async (req , res , next) => {
             })
         }
     } catch(e) {
+        console.log(e)
         return res.status(401).json({
             message: 'Internal Server error'
         })
     }
-
 }
 
 const isPatient = async (req , res , next) => {
