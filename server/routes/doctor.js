@@ -10,7 +10,7 @@ const router = express.Router();
 
 
 const { isLoggedIn, isDoctor } = require('../middlewares/authMiddleware');
-const { updateDoctorProfile, getSpecialities, getAvailableSlots, addAvailableSlot, updateAvailbleSlot, deleteSlot, deleteDateSlots, getAppointments, getProfile } = require('../controllers/doctorController');
+const { updateDoctorProfile, getSpecialities, getAvailableSlots, addAvailableSlot, updateAvailbleSlot, deleteSlot, deleteDateSlots, getAppointments, getProfile, getAvailableSlotsByDate } = require('../controllers/doctorController');
 
 
 router.get('/profile', isLoggedIn, isDoctor , getProfile)
@@ -20,6 +20,8 @@ router.put('/profile/update', isLoggedIn, isDoctor, updateDoctorProfile)
 router.get('/specialities', getSpecialities);
 
 router.get('/slots', isLoggedIn, isDoctor, getAvailableSlots);
+
+router.get('/slotsByDate', isLoggedIn, isDoctor, getAvailableSlotsByDate);
 
 router.post('/slots', isLoggedIn, isDoctor, addAvailableSlot);
 
