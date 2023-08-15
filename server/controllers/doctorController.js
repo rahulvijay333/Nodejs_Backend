@@ -24,19 +24,19 @@ const updateDoctorProfile = async (req, res) => {
   const { username, gender, speciality, phone, houseName, city, state, services, qualification } = req.body;
 
   console.log(username);
+  console.log(services);
 
   try {
 
     const doctor = await Doctor.findOne({ _id: req.userId });
-    console.log(req.files);
 
     if (req.files) {
 
-      const result = await cloudinary.uploader.upload(req.files.profilePic.tempFilePath, { folder: 'Patients' });
+      const result = await cloudinary.uploader.upload(req.files.profilePic?.tempFilePath , { folder: 'Patients' });
       doctor.profilePicture.public_id = result.public_id;
       doctor.profilePicture.secure_url = result.secure_url
 
-      const pdfResponse = await cloudinary.uploader.upload(req.files.certificate.tempFilePath, { folder: 'Patients' });
+      const pdfResponse = await cloudinary.uploader.upload(req.files.certificate?.tempFilePath, { folder: 'Patients' });
       doctor.certificate.public_id = pdfResponse.public_id;
       doctor.certificate.secure_url = pdfResponse.secure_url;
 

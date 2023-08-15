@@ -179,17 +179,17 @@ const loginDoctor = async (req, res) => {
   try {
     const doctor = await Doctor.findOne({ email: email });
     if (doctor) {
-      if (!doctor.isVerified) {
-        return res.status(401).json({
-          errorInfo: "Email is not verified",
-        });
-      }
+      // if (!doctor.isVerified) {
+      //   return res.status(401).json({
+      //     errorInfo: "Email is not verified",
+      //   });
+      // }
 
-      if (!doctor.isAdminVerified) {
-        return res.status(401).json({
-          errorInfo: "Admin verification required",
-        });
-      }
+      // if (!doctor.isAdminVerified) {
+      //   return res.status(401).json({
+      //     errorInfo: "Admin verification required",
+      //   });
+      // }
 
       let isCorrectPassword = await bcrypt.compare(password, doctor.password);
       if (isCorrectPassword) {
