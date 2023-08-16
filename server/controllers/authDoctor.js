@@ -185,11 +185,11 @@ const loginDoctor = async (req, res) => {
       //   });
       // }
 
-      if (!doctor.isAdminVerified) {
-        return res.status(401).json({
-          errorInfo: "Admin verification required",
-        });
-      }
+      // if (!doctor.isAdminVerified) {
+      //   return res.status(401).json({
+      //     errorInfo: "Admin verification required",
+      //   });
+      // }
 
       let isCorrectPassword = await bcrypt.compare(password, doctor.password);
       if (isCorrectPassword) {
