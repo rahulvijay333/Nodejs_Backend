@@ -8,7 +8,31 @@ const mongoose = require('mongoose');
 
 
 
+const getDoctorDetailsbyID = async (req, res) => {
 
+    const { id } = req.params;
+
+    try {
+        //console.log(id);
+        const doctor = await Doctor.findOne({ _id: id });
+        console.log(doctor);
+
+
+
+        res.status(200).json({
+            message: 'profile information sucess',
+            user: doctor
+        })
+
+    } catch (err) {
+
+
+
+        res.status(500).json({
+            errorInfo: 'Internal server error'
+        })
+    }
+}
 
 
 
@@ -420,5 +444,6 @@ module.exports = {
     likeHandler,
     ratingHandler,
     commentHandler,
-    getPatientDetails
+    getPatientDetails,
+    getDoctorDetailsbyID
 }

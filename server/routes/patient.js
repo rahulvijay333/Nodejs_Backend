@@ -12,7 +12,7 @@ const { isLoggedIn, isPatient } = require('../middlewares/authMiddleware');
 
 //add here ---------------------------custom
 
-const { updatePatientProfile, getAllDoctors, getMyAppointments, likeHandler, ratingHandler, commentHandler, getPatientDetails} = require('../controllers/patientController');
+const { updatePatientProfile, getAllDoctors, getMyAppointments, likeHandler, ratingHandler, commentHandler, getPatientDetails,getDoctorDetailsbyID} = require('../controllers/patientController');
 
 
 router.put('/profile/update', isLoggedIn, isPatient, updatePatientProfile)
@@ -28,6 +28,13 @@ router.put('/doctor/:id/rating', isLoggedIn, isPatient, ratingHandler)
 router.put('/doctor/:id/comment', isLoggedIn , isPatient , commentHandler)
 
 router.get('/profile/details/:id',getPatientDetails )
+
+//--new route for getting doctor details
+router.get('/doctorprofile/details/:id',getDoctorDetailsbyID)
+
+
+
+
 
 // router.get('/doctor/:id/comment', isLoggedIn, isPatient, async (req, res) => {
 //     const { id } = req.params;
