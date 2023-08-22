@@ -386,13 +386,21 @@ const getAppointments = async (req, res) => {
   if (status === 'upcoming') {
     const currentDate = new Date();
     const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
-    query.selectedDate = { $gte: formattedDate };
+    query.selectedDate = { $gt: formattedDate };
   }
   if (status === 'past') {
     const currentDate = new Date();
     const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
     query.selectedDate = { $lt: formattedDate };
   }
+
+  if (status === 'today') {
+    // const dateObj = new Date();
+    const currentDate = new Date();
+    const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
+    query.selectedDate = formattedDate;
+  
+}
 
 
   try {

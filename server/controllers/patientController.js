@@ -160,75 +160,94 @@ const getAllDoctors = async (req, res) => {
     }
 }
 
+
 const getMyAppointments = async (req, res) => {
     const { status } = req.query;
     const query = {
         patientId: new mongoose.Types.ObjectId(req.userId),
-        isCancelled: false
+        isCancelled: false,
+    };
+    if (status === "pending") {
+        query.isApprovedByDoctor = false;
     }
-    if (status === 'pending') {
-        query.isApprovedByDoctor = false
+    if (status === "approved") {
+        query.isApprovedByDoctor = true;
     }
-    if (status === 'approved') {
-        query.isApprovedByDoctor = true
-    }
-    if (status === 'cancelled') {
-        query.isCancelled = true
+    if (status === "cancelled") {
+        query.isCancelled = true;
     }
 
-    if (status === 'upcoming') {
+    if (status === "upcoming") {
         // const dateObj = new Date();
         const currentDate = new Date();
-        const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
-        query.selectedDate = { $gte: formattedDate };
+        const formattedDate = new Date(currentDate.toISOString().split("T")[0]);
+        query.selectedDate = { $gt: formattedDate };
         // query.selectedDate = {$gte : dateObj}
     }
-    if (status === 'past') {
+    if (status === "past") {
         // const dateObj = new Date();
         const currentDate = new Date();
-        const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
+        const formattedDate = new Date(currentDate.toISOString().split("T")[0]);
         query.selectedDate = { $lt: formattedDate };
         // query.selectedDate = {$gte : dateObj}
     }
-
+    if (status === 'today') {
+        // const dateObj = new Date();
+        const currentDate = new Date();
+        const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
+        query.selectedDate = formattedDate;
+      
+    }
 
     try {
         const appointments = await Appointment.aggregate([
             {
-                $match: query
+                $match: query,
             },
             {
-                '$lookup': {
-                    'from': 'doctors',
-                    'localField': 'doctorId',
-                    'foreignField': '_id',
-                    'as': 'doctor'
-                }
+                $lookup: {
+                    from: "doctors",
+                    localField: "doctorId",
+                    foreignField: "_id",
+                    as: "doctor",
+                },
             },
             {
-                '$unwind': {
-                    'path': '$doctor'
-                }
+                $unwind: {
+                    path: "$doctor",
+                },
             },
             {
-                '$project': {
-                    'doctor.availableSlots': 0,
-                    'doctor.password': 0,
-                    'doctor.services': 0
-                }
-            }
+                $lookup: {
+                    from: "specialities",
+                    localField: "doctor.speciality",
+                    foreignField: "_id",
+                    as: "speciality",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$speciality",
+                },
+            },
+            {
+                $project: {
+                    "doctor.availableSlots": 0,
+                    "doctor.password": 0,
+                    "doctor.services": 0,
+                },
+            },
         ]);
 
-
-        res.status(200).json({ appointments: appointments })
-
+        res.status(200).json({ appointments: appointments });
     } catch (err) {
         res.status(500).json({
-            errorInfo: 'Inernal Server Error'
-        })
+            errorInfo: "Inernal Server Error",
+        });
     }
+};
 
-}
+
 
 const likeHandler = async (req, res) => {
     const { id } = req.params;
