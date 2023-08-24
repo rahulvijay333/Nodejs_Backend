@@ -79,9 +79,18 @@ const updateDoctorProfile = async (req, res) => {
     qualification,
   } = req.body;
 
-  console.log(username);
+ 
 
   try {
+
+    // Check if any of the required fields are empty
+    if (!username || !gender || !phone || !speciality || !houseName || !city || !state || !services || !qualification) {
+      return res.status(400).json({
+        errorInfo: "Missing required fields. Profile not updated.",
+      });
+    }
+
+
     const doctor = await Doctor.findOne({ _id: req.userId });
     const profilePic = req.files?.profilePic?.tempFilePath;
     const certificate = req.files?.certificate?.tempFilePath;
@@ -399,8 +408,8 @@ const getAppointments = async (req, res) => {
     const currentDate = new Date();
     const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
     query.selectedDate = formattedDate;
-  
-}
+
+  }
 
 
   try {
