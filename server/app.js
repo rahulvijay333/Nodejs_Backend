@@ -29,7 +29,7 @@ const PORT = process.env.PORT || 4000;
 
 
 app.get('/', (req, res) => {
-    res.send('Hello');
+  res.send('Hello');
 })
 
 const authRoutes = require('./routes/auth');
@@ -60,7 +60,7 @@ app.use('/api/notification', notificationRoutes);
 const connect = async () => {
   try {
     await connectDB();
-    let server = app.listen(PORT,() => {
+    let server = app.listen(PORT, () => {
       console.log(`App is running @ ${PORT}`)
     })
     return server;
@@ -72,7 +72,7 @@ const connect = async () => {
 connect().then((server) => {
   socketConnect(server);
 })
-.catch(err => console.log(err));
+  .catch(err => console.log(err));
 
 
 

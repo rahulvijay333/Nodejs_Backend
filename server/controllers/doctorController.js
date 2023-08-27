@@ -5,11 +5,30 @@ const Speciality = require('../models/speciality');
 const Appointment = require('../models/appointment');
 const mongoose = require('mongoose')
 
+//original one before editing
+
+// const getProfile = async (req, res) => {
+//   try {
+//     const doctor = await Doctor.find({ _id: req.userId });
+//     if (doctor) {
+//       return res.status(200).json({ doctor });
+//     }
+//   } catch (err) {
+//     return res.status(404).json({
+//       errorInfo: 'Internal Server Error'
+//     })
+//   }
+// }
+
 const getProfile = async (req, res) => {
   try {
-    const doctor = await Doctor.find({ _id: req.userId });
+    const doctor = await Doctor.findOne({ _id: req.userId }).populate('speciality').exec();
     if (doctor) {
       return res.status(200).json({ doctor });
+    } else {
+      return res.status(401).json({
+        errorInfo: 'Doctor not found'
+      });
     }
   } catch (err) {
     return res.status(404).json({
@@ -17,6 +36,7 @@ const getProfile = async (req, res) => {
     })
   }
 }
+
 
 
 // const updateDoctorProfile = async (req, res) => {
@@ -80,7 +100,15 @@ const updateDoctorProfile = async (req, res) => {
   } = req.body;
 
  
-
+    console.log(username,
+      gender,
+      speciality,
+      phone,
+      houseName,
+      city,
+      state,
+      services,
+      qualification,)
   try {
 
     // Check if any of the required fields are empty
@@ -386,6 +414,8 @@ const getAppointments = async (req, res) => {
   }
   if (status === 'approved') {
     query.isApprovedByDoctor = true;
+    
+    
   }
 
   if (status === 'cancelled') {
