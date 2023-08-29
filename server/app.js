@@ -60,7 +60,7 @@ app.use('/api/notification', notificationRoutes);
 const connect = async () => {
   try {
     await connectDB();
-    let server = app.listen(PORT, () => {
+    let server = app.listen(PORT, ip, () => {
       console.log(`App is running @ ${PORT}`)
     })
     return server;

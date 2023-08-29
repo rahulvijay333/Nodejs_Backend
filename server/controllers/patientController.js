@@ -65,39 +65,92 @@ const getPatientDetails = async (req, res) => {
 
 
 
-const updatePatientProfile = async (req, res) => {
+// const updatePatientProfile = async (req, res) => {
 
+//     const { username, gender, phone, houseName, city, state } = req.body;
+
+//     try {
+
+//         const patient = await Patient.findOne({ _id: req.userId });
+
+//         if (req.files) {
+
+//             const result = await cloudinary.uploader.upload(req.files.profilePic.tempFilePath, { folder: 'Patients' });
+//             patient.profilePicture.public_id = result.public_id;
+//             patient.profilePicture.secure_url = result.secure_url
+
+//         }
+
+//         patient.fullName = username;
+//         patient.gender = gender;
+//         patient.phone = phone;
+//         patient.address = { houseName, city, state };
+
+//         await patient.save()
+//         res.status(200).json({
+//             message: 'Updation success',
+//             user: patient
+//         })
+
+//     } catch (err) {
+//         res.status(500).json({
+//             errorInfo: 'Internal server error'
+//         })
+//     }
+// }
+
+const updatePatientProfile = async (req, res) => {
     const { username, gender, phone, houseName, city, state } = req.body;
 
     try {
-
         const patient = await Patient.findOne({ _id: req.userId });
 
-        if (req.files) {
-
+        if (req.files && req.files.profilePic) {
             const result = await cloudinary.uploader.upload(req.files.profilePic.tempFilePath, { folder: 'Patients' });
             patient.profilePicture.public_id = result.public_id;
-            patient.profilePicture.secure_url = result.secure_url
-
+            patient.profilePicture.secure_url = result.secure_url;
         }
 
-        patient.fullName = username;
-        patient.gender = gender;
-        patient.phone = phone;
-        patient.address = { houseName, city, state };
+        if (username !== null) {
+            patient.fullName = username;
+        }
 
-        await patient.save()
+        if (gender !== null) {
+            patient.gender = gender;
+        }
+
+        if (phone !== null) {
+            patient.phone = phone;
+        }
+
+        if (houseName !== null || city !== null || state !== null) {
+            if (patient.address === undefined) {
+                patient.address = {};
+            }
+            if (houseName !== null) {
+                patient.address.houseName = houseName;
+            }
+            if (city !== null) {
+                patient.address.city = city;
+            }
+            if (state !== null) {
+                patient.address.state = state;
+            }
+        }
+
+        await patient.save();
+
         res.status(200).json({
             message: 'Updation success',
             user: patient
-        })
-
+        });
     } catch (err) {
         res.status(500).json({
             errorInfo: 'Internal server error'
-        })
+        });
     }
 }
+
 
 const getAllDoctors = async (req, res) => {
     // let { limit, skip, specialities } = req.query;
@@ -196,7 +249,7 @@ const getMyAppointments = async (req, res) => {
         const currentDate = new Date();
         const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
         query.selectedDate = formattedDate;
-      
+
     }
 
     try {

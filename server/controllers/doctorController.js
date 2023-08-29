@@ -86,6 +86,46 @@ const getProfile = async (req, res) => {
 // }
 
 
+const updateDoctorPartialProfile = async (req, res) => {
+  const { houseName, city, state, services } = req.body;
+  
+  try {
+    // Check if any of the required fields are empty
+    if (!houseName || !city || !state || !services) {
+      return res.status(400).json({
+        errorInfo: "Missing required fields. Profile not updated.",
+      });
+    }
+
+    const doctor = await Doctor.findOne({ _id: req.userId });
+    const profilePic = req.files?.profilePic?.tempFilePath;
+    console.log(profilePic);
+
+    if (req.files) {
+      const result = await cloudinary.uploader.upload(profilePic, {
+        folder: "Patients",
+      });
+      doctor.profilePicture.public_id = result.public_id;
+      doctor.profilePicture.secure_url = result.secure_url;
+    }
+
+    doctor.address = { houseName, city, state };
+    doctor.services = services.split(",");
+
+    await doctor.save();
+    res.status(200).json({
+      message: "Partial updation success",
+      user: doctor,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      errorInfo: "Internal server error",
+    });
+  }
+};
+
+
 const updateDoctorProfile = async (req, res) => {
   const {
     username,
@@ -438,6 +478,7 @@ const getAppointments = async (req, res) => {
     const currentDate = new Date();
     const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
     query.selectedDate = formattedDate;
+    
 
   }
 
@@ -488,5 +529,5 @@ module.exports = {
   deleteSlot,
   deleteDateSlots,
   getAppointments,
-  getProfile
+  getProfile,updateDoctorPartialProfile
 }
