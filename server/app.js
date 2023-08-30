@@ -55,12 +55,12 @@ app.use('/api/notification', notificationRoutes);
 
 
 // establishing connestion to database
-
+const ip = '192.168.1.100'
 
 const connect = async () => {
   try {
     await connectDB();
-    let server = app.listen(PORT, () => {
+    let server = app.listen(PORT, ip,() => {
       console.log(`App is running @ ${PORT}`)
     })
     return server;
