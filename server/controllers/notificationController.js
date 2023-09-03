@@ -24,7 +24,7 @@ const doctorGetNotification = async (req, res) => {
         const notification = await Notification.find({ recipient: req.userId, read: false }).populate('sender', 'name').exec();;
 
         if (notification.length === 0) {
-            return res.status(400).json({ errorInfo: 'No Notifications' });
+            return res.status(202).json({ notification: [] });
         }
 
         res.status(200).json({ notification });
