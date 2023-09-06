@@ -12,6 +12,9 @@ const appointmentSchema = new mongoose.Schema({
       date: {
          type: Date
       },
+      reason: {
+        type : String
+      },
       fees: {
         type: String
       }  ,

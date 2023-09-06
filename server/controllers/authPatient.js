@@ -204,6 +204,88 @@ const loginPatient = async (req, res) => {
   }
 };
 
+// const resetPasswordPatient = async (req, res) => {
+//   const { email } = req.body;
+//   try {
+//     const patient = await Patient.findOne({ email: email });
+//     if (patient) {
+//       const token = jwt.sign(
+//         { email: email },
+
+//         process.env.SECRET_KEY,
+//         {
+//           expiresIn: "5m",
+//         }
+//       );
+
+//       patient.forgotPasswordToken = token;
+//       await patient.save();
+
+//       const mailOptions = {
+//         from: "admin@gmail.com",
+//         to: `${email}`,
+//         subject: "Password reset",
+//         text: `Hi! Please follow the given link to change your password http://localhost:4000/patient/reset/password/${token}`,
+//       };
+
+//       await transporter.sendMail(mailOptions);
+
+//       res.status(200).json({
+//         message: "Check the email for resetting password",
+//       });
+//     } else {
+//       res.status(404).json({
+//         errorInfo: `User doesn't exist with this email`,
+//       });
+//     }
+//   } catch (err) {
+//     res.status(500).json({
+//       errorInfo: "Internal Server error",
+//     });
+//   }
+// };
+
+// const newPasswordPatient = async (req, res) => {
+//   const { password, confirmPassword, passwordToken } = req.body;
+//   if (password === confirmPassword) {
+//     try {
+//       let decodeInfo = jwt.verify(passwordToken, process.env.SECRET_KEY);
+//       const email = decodeInfo.email;
+//       const patient = await Patient.findOne({ email: email });
+//       if (patient) {
+//         if (patient.forgotPasswordToken === passwordToken) {
+//           const hashPassword = await bcrypt.hash(password, 10);
+
+//           patient.password = hashPassword;
+//           patient.forgotPasswordToken = undefined;
+
+//           await patient.save();
+
+//           return res.status(200).json({
+//             message: "Password updated success",
+//           });
+//         } else {
+//           return res.status(400).json({
+//             errorInfo: "Token expired or wrong token",
+//           });
+//         }
+//       } else {
+//         return res.status(404).json({
+//           errorInfo: "User Not found",
+//         });
+//       }
+//     } catch (err) {
+//       return res.status(400).json({
+//         error: "Token expired or wrong token",
+//       });
+//     }
+//   } else {
+//     return res.status(400).json({
+//       errorInfo: `Please confirm your password`,
+//     });
+//   }
+// };
+
 const resetPasswordPatient = async (req, res) => {
   const { email } = req.body;
   try {
@@ -221,17 +303,9 @@ const resetPasswordPatient = async (req, res) => {
       patient.forgotPasswordToken = token;
       await patient.save();
 
-      const mailOptions = {
-        from: "admin@gmail.com",
-        to: `${email}`,
-        subject: "Password reset",
-        text: `Hi! Please follow the given link to change your password http://localhost:4000/patient/reset/password/${token}`,
-      };
-
-      await transporter.sendMail(mailOptions);
-
       res.status(200).json({
-        message: "Check the email for resetting password",
+        success: true,
+        token,
       });
     } else {
       res.status(404).json({
@@ -246,8 +320,8 @@ const resetPasswordPatient = async (req, res) => {
 };
 
 const newPasswordPatient = async (req, res) => {
-  const { password, confirmPassword, passwordToken } = req.body;
-  if (password === confirmPassword) {
+  const { password, confirmPasssword, passwordToken } = req.body;
+  if (password === confirmPasssword) {
     try {
       let decodeInfo = jwt.verify(passwordToken, process.env.SECRET_KEY);
       const email = decodeInfo.email;
@@ -276,7 +350,7 @@ const newPasswordPatient = async (req, res) => {
       }
     } catch (err) {
       return res.status(400).json({
-        error: "Token expired or wrong token",
+        errorInfo: "Token expired or wrong token",
       });
     }
   } else {

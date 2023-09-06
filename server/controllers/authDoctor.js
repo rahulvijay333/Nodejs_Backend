@@ -232,6 +232,88 @@ const loginDoctor = async (req, res) => {
   }
 };
 
+// const resetPasswordDoctor = async (req, res) => {
+//   const { email } = req.body;
+//   try {
+//     const doctor = await Doctor.findOne({ email: email });
+//     if (doctor) {
+//       const token = jwt.sign(
+//         { email: email },
+
+//         process.env.SECRET_KEY,
+//         {
+//           expiresIn: "5m",
+//         }
+//       );
+
+//       doctor.forgotPasswordToken = token;
+//       await doctor.save();
+
+//       const mailOptions = {
+//         from: "admin@gmail.com",
+//         to: `${email}`,
+//         subject: "Password reset",
+//         text: `Hi! Please follow the given link to change your password http://localhost:3000/doctor/reset/password/${token}`,
+//       };
+
+//       await transporter.sendMail(mailOptions);
+
+//       res.status(200).json({
+//         message: "Check the email for resetting password",
+//       });
+//     } else {
+//       res.status(404).json({
+//         errorInfo: `User doesn't exist with this email`,
+//       });
+//     }
+//   } catch (err) {
+//     res.status(500).json({
+//       errorInfo: "Internal Server error",
+//     });
+//   }
+// };
+
+// const newPasswordDoctor = async (req, res) => {
+//   const { password, confirmPassword, passwordToken } = req.body;
+//   if (password === confirmPassword) {
+//     try {
+//       let decodeInfo = jwt.verify(passwordToken, process.env.SECRET_KEY);
+//       const email = decodeInfo.email;
+//       const doctor = await Doctor.findOne({ email: email });
+//       if (doctor) {
+//         if (doctor.forgotPasswordToken === passwordToken) {
+//           const hashPassword = await bcrypt.hash(password, 10);
+
+//           doctor.password = hashPassword;
+//           doctor.forgotPasswordToken = undefined;
+
+//           await doctor.save();
+
+//           return res.status(200).json({
+//             message: "Password updated success",
+//           });
+//         } else {
+//           return res.status(400).json({
+//             errorInfo: "Token expired or wrong token",
+//           });
+//         }
+//       } else {
+//         return res.status(404).json({
+//           errorInfo: "User Not found",
+//         });
+//       }
+//     } catch (err) {
+//       return res.status(400).json({
+//         error: "Token expired or wrong token",
+//       });
+//     }
+//   } else {
+//     return res.status(400).json({
+//       errorInfo: `Please confirm your password`,
+//     });
+//   }
+// };
+
 const resetPasswordDoctor = async (req, res) => {
   const { email } = req.body;
   try {
@@ -249,17 +331,18 @@ const resetPasswordDoctor = async (req, res) => {
       doctor.forgotPasswordToken = token;
       await doctor.save();
 
-      const mailOptions = {
-        from: "admin@gmail.com",
-        to: `${email}`,
-        subject: "Password reset",
-        text: `Hi! Please follow the given link to change your password http://localhost:3000/doctor/reset/password/${token}`,
-      };
+      // const mailOptions = {
+      //   from: "admin@gmail.com",
+      //   to: `${email}`,
+      //   subject: "Password reset",
+      //   text: `Hi! Please follow the given link to change your password http://localhost:3000/doctor/reset/password/${token}`,
+      // };
 
-      await transporter.sendMail(mailOptions);
+      // await transporter.sendMail(mailOptions);
 
       res.status(200).json({
-        message: "Check the email for resetting password",
+        success: true,
+        token,
       });
     } else {
       res.status(404).json({
@@ -273,8 +356,13 @@ const resetPasswordDoctor = async (req, res) => {
   }
 };
 
+
+
+
 const newPasswordDoctor = async (req, res) => {
   const { password, confirmPassword, passwordToken } = req.body;
+  console.log(password);
+  console.log(confirmPassword);
   if (password === confirmPassword) {
     try {
       let decodeInfo = jwt.verify(passwordToken, process.env.SECRET_KEY);
@@ -313,6 +401,7 @@ const newPasswordDoctor = async (req, res) => {
     });
   }
 };
+
 
 const logoutDoctor = (req, res) => {
   res
