@@ -320,8 +320,8 @@ const resetPasswordPatient = async (req, res) => {
 };
 
 const newPasswordPatient = async (req, res) => {
-  const { password, confirmPasssword, passwordToken } = req.body;
-  if (password === confirmPasssword) {
+  const { password, confirmPassword, passwordToken } = req.body;
+  if (password === confirmPassword) {
     try {
       let decodeInfo = jwt.verify(passwordToken, process.env.SECRET_KEY);
       const email = decodeInfo.email;
