@@ -59,8 +59,8 @@ const connect = async () => {
     await connectDB();
 
     // Load your SSL certificate (fullchain) and private key
-    const privateKey = fs.readFileSync('/etc/letsencrypt/live/angelvision.cloud/privkey.pem', 'utf8'); // Your private key file
-    const certificate = fs.readFileSync('/etc/letsencrypt/live/angelvision.cloud/fullchain.pem', 'utf8'); // Your fullchain certificate file
+    const privateKey = fs.readFileSync('keystore/privkey.pem', 'utf8'); // Your private key file
+    const certificate = fs.readFileSync('keystore/fullchain.pem', 'utf8'); // Your fullchain certificate file
 
     const credentials = { key: privateKey, cert: certificate };
 
