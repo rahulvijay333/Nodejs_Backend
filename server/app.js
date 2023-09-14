@@ -1,37 +1,38 @@
-// express config
+
+
 const express = require('express');
+const https = require('https'); // Import the 'https' module
+const fs = require('fs'); // Import the 'fs' module for file operations
 const app = express();
 
-// dot env config
-require('dotenv').config()
+// Load environment variables from a .env file
+require('dotenv').config();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// mongodb connection
+// MongoDB connection
 let { connectDB } = require('./db/connection');
 
-// cors
+// CORS
 const cors = require('cors');
 app.use(cors());
 
-// parsing the cookies
+// Parsing cookies
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
-
-// handling files
+// Handling files
 const fileupload = require('express-fileupload');
 app.use(fileupload({ useTempFiles: true, tempFileDir: '/temp/' }));
 
-
 const PORT = process.env.PORT || 4000;
-
 
 app.get('/', (req, res) => {
   res.send('Hello');
-})
+});
 
+// Routes and other middleware (add your routes here)
 const authRoutes = require('./routes/auth');
 const patientRoutes = require('./routes/patient');
 const doctorRoutes = require('./routes/doctor');
@@ -52,31 +53,32 @@ app.use('/api/message', messageRoutes);
 app.use('/api/notification', notificationRoutes);
 
 
-
-
-// establishing connestion to database
-
-
+// Establishing connection to the database
 const connect = async () => {
   try {
     await connectDB();
-    let server = app.listen(PORT, () => {
-      console.log(`App is running @ ${PORT}`)
-    })
+
+    // Load your SSL certificate (fullchain) and private key
+    const privateKey = fs.readFileSync('/etc/letsencrypt/live/angelvision.cloud/privkey.pem', 'utf8'); // Your private key file
+    const certificate = fs.readFileSync('/etc/letsencrypt/live/angelvision.cloud/fullchain.pem', 'utf8'); // Your fullchain certificate file
+
+    const credentials = { key: privateKey, cert: certificate };
+
+    // Create an HTTPS server
+    const server = https.createServer(credentials, app);
+
+    server.listen(PORT, () => {
+      console.log(`App is running @ ${PORT}`);
+    });
+
     return server;
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
-}
+};
 
 connect().then((server) => {
   socketConnect(server);
-})
-  .catch(err => console.log(err));
-
-
-
-
-
-
-
+}).catch((err) => {
+  console.error(err);
+});
