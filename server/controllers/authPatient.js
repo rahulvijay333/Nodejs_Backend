@@ -66,6 +66,65 @@ const registerPatient = async (req, res) => {
   }
 };
 
+
+// // Express route handler for resending OTP
+// app.post('/resend-otp', resendOtpController);
+
+const resendOtpController = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const patient = await Patient.findOne({ email: email });
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "No patient found with this email",
+      });
+    }
+
+    if (patient.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "User is already verified",
+      });
+    }
+
+    // Generate a new OTP
+    const newOtp = 1000 + Math.floor(Math.random() * 9000);
+    const newOtpExpiry = Date.now() + 2 * 60 * 1000;
+
+    // Update the patient's OTP and OTP expiry
+    patient.otp = newOtp;
+    patient.otpExpiry = newOtpExpiry;
+
+    // Save the updated patient
+    await patient.save();
+
+    // Send the new OTP to the user's email
+    const mailOptions = {
+      from: "admin@gmail.com",
+      to: `${email}`,
+      subject: "Resend OTP",
+      html: `<p>Your new OTP is <b>${newOtp}</b>. This code expires in 5 minutes.</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({
+      success: true,
+      message: "New OTP sent successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+
 const patientVerifyController = async (req, res) => {
   const { email, otp } = req.body;
   console.log(otp);
