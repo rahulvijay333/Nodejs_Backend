@@ -5,10 +5,17 @@ const transporter = require("../utils/emailHelper");
 const Notification = require("../models/notification");
 const Admin = require("../models/admin");
 
+let temporaryDoctor = null;
+
+
+
+//testing functions
+
 const registerDoctor = async (req, res) => {
   const { name, email, password } = req.body;
-  console.log(email);
   try {
+    // ... (input validation and error handling)
+
     const doctor = await Doctor.findOne({ email: email });
     console.log(doctor);
     if (!name || !email || !password) {
@@ -21,47 +28,23 @@ const registerDoctor = async (req, res) => {
         .status(409)
         .json({ errorInfo: "user already exist with this email" });
     } else {
-      const hashPassword = await bcrypt.hash(password, 10);
+
+      // const hashPassword = await bcrypt.hash(password, 10);
 
       const otp = 1000 + Math.floor(Math.random() * 9000);
       const otpExpiry = Date.now() + 5 * 60 * 1000;
+      console.log(otp);
 
-      //   const token = jwt.sign(
-      //     { name: name, email: email },
 
-      //     process.env.SECRET_KEY,
-      //     {
-      //       expiresIn: "5m",
-      //     }
-      //   );
 
-      const newDoctor = await Doctor.create({
+      temporaryDoctor = Doctor({
         name: name,
         email: email,
-        password: hashPassword,
-        otp: otp,
-        otpExpiry: otpExpiry,
+        password: password,
+        isVerified: false,
+        otp: otp, // Initialize OTP as null
+        otpExpiry: otpExpiry, // Initialize OTP expiry as null
       });
-
-      //   const newDoctor = new Doctor(
-      //     {
-      //       name: name,
-      //       email: email,
-      //       password: hashPassword,
-      //       // verifyToken: token,
-      //       otp: otp,
-      //       otpExpiry: otpExpiry,
-      //     },
-      //     { name: 1, email: 1, _id: 1 }
-      //   );
-
-      //   const mailOptions = {
-      //     from: "admin@gmail.com",
-      //     to: `${email}`,
-      //     subject: "Email Verification",
-      //     text: `Hi! There, You have recently visited our website and entered your email.Please follow the given link to verify your email http://localhost:4000/doctor/verify/${token}
-      //             Link will expire in 5 minutes`,
-      //   };
 
       const mailOptions = {
         from: "admin@gmail.com",
@@ -72,30 +55,176 @@ const registerDoctor = async (req, res) => {
 
       await transporter.sendMail(mailOptions);
 
-      newDoctor.password = undefined;
-      newDoctor.verifyToken = undefined;
+      // temporaryDoctor.password = undefined;
+      // temporaryDoctor.verifyToken = undefined;
 
       const admin = await Admin.findOne({});
 
       const newNotification = await Notification.create({
         recipient: admin._id,
         recipientType: "Admin",
-        sender: newDoctor._id,
+        sender: temporaryDoctor._id,
         senderType: "Doctor",
         message: "New Doctor registered",
       });
 
-      return res.status(201).json({
-        user: newDoctor,
+      // Generate and send OTP to the doctor's email
+      // ... (send OTP logic)
+
+      res.status(200).json({
+        success: true,
+        message: "OTP sent successfully",
       });
+
     }
-  } catch (err) {
-    console.log(err);
+
+
+
+
+  } catch (error) {
+    console.error(error);
     res.status(500).json({
-      errorInfo: "Internal server error",
+      success: false,
+      message: "Internal server error",
     });
   }
 };
+
+
+const doctorVerifyController = async (req, res) => {
+  const { email, otp } = req.body;
+  
+
+  try {
+    if (!temporaryDoctor) {
+      console.log(temporaryDoctor);
+      return res.status(404).json({
+        success: false,
+        message: "Doctor details not found",
+      });
+    }
+
+    if (temporaryDoctor.email !== email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email mismatch",
+      });
+    }
+
+    if (parseInt(otp) === temporaryDoctor.otp) {
+      if (Date.now() < temporaryDoctor.otpExpiry) {
+        // OTP verification successful, update doctor status to "verified"
+        temporaryDoctor.isVerified = true;
+
+        // Now, save the doctor to the database
+        const hashPassword = await bcrypt.hash(temporaryDoctor.password, 10);
+
+        const newDoctor = await Doctor.create({
+          name: temporaryDoctor.name,
+          email: temporaryDoctor.email,
+          password: hashPassword,
+          isVerified: true, // Set as verified in the database
+        });
+
+        // Clear the temporaryDoctor variable
+        temporaryDoctor = null;
+
+        res.status(200).json({
+          success: true,
+          message: "OTP verified successfully, doctor registered",
+         
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: "OTP has already expired",
+        });
+      }
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+
+//---<<<<<<<<<<<<<<<-----------------------------------------------testing
+
+
+//----------------------------------------------------uncomment here
+// const registerDoctor = async (req, res) => {
+//   const { name, email, password } = req.body;
+//   console.log(email);
+//   try {
+//     const doctor = await Doctor.findOne({ email: email });
+//     console.log(doctor);
+//     if (!name || !email || !password) {
+//       return res.status(400).json({
+//         errorInfo: "Please provide all required fields",
+//       });
+//     }
+//     if (doctor) {
+//       return res
+//         .status(409)
+//         .json({ errorInfo: "user already exist with this email" });
+//     } else {
+//       const hashPassword = await bcrypt.hash(password, 10);
+
+//       const otp = 1000 + Math.floor(Math.random() * 9000);
+//       const otpExpiry = Date.now() + 5 * 60 * 1000;
+
+
+
+//       const newDoctor = await Doctor.create({
+//         name: name,
+//         email: email,
+//         password: hashPassword,
+//         otp: otp,
+//         otpExpiry: otpExpiry,
+//       });
+
+
+//       const mailOptions = {
+//         from: "admin@gmail.com",
+//         to: `${email}`,
+//         subject: "OTP VERIFICATION",
+//         html: `<p>Enter <b> ${otp} </b> in the app to verify your email address and complete the signup process. This code expires in 5 minutes</p>`,
+//       };
+
+//       await transporter.sendMail(mailOptions);
+
+//       newDoctor.password = undefined;
+//       newDoctor.verifyToken = undefined;
+
+//       const admin = await Admin.findOne({});
+
+//       const newNotification = await Notification.create({
+//         recipient: admin._id,
+//         recipientType: "Admin",
+//         sender: newDoctor._id,
+//         senderType: "Doctor",
+//         message: "New Doctor registered",
+//       });
+
+//       return res.status(201).json({
+//         user: newDoctor,
+//       });
+//     }
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).json({
+//       errorInfo: "Internal server error",
+//     });
+//   }
+// };
 
 // const verifyDoctorEmail = async (req, res) => {
 //   const { token } = req.params;
@@ -129,49 +258,51 @@ const registerDoctor = async (req, res) => {
 //   }
 // };
 
-const doctorVerifyController = async (req, res) => {
-  const { email, otp } = req.body;
-  console.log(otp);
-  try {
-    const doctor = await Doctor.find({ email: email });
-    console.log(doctor[0]);
-    if (doctor.length > 0) {
-      if (parseInt(otp) === doctor[0].otp) {
-        if (Date.now() < doctor[0].otpExpiry) {
-          //   await Patient.findOneAndUpdate(
-          //     { email: email },
-          //     { $set: { isVerified: true } }
-          //   );
-          doctor[0].isVerified = true;
-          doctor[0].otp = undefined;
-          doctor[0].otpExpiry = undefined;
-          await doctor[0].save();
-          res.status(200).json({
-            success: true,
-            message: "Otp verified success",
-          });
-        } else {
-          res.status(400).json({
-            success: false,
-            message: "Otp is already expired",
-          });
-        }
-      } else {
-        res.status(400).json({
-          success: false,
-          message: "Invalid OTP",
-        });
-      }
-    } else {
-      res.status(404).json({
-        success: false,
-        message: "No Doctors found",
-      });
-    }
-  } catch (e) {
-    console.log(e);
-  }
-};
+
+//uncomment this function
+// const doctorVerifyController = async (req, res) => {
+//   const { email, otp } = req.body;
+//   console.log(otp);
+//   try {
+//     const doctor = await Doctor.find({ email: email });
+//     console.log(doctor[0]);
+//     if (doctor.length > 0) {
+//       if (parseInt(otp) === doctor[0].otp) {
+//         if (Date.now() < doctor[0].otpExpiry) {
+//           //   await Patient.findOneAndUpdate(
+//           //     { email: email },
+//           //     { $set: { isVerified: true } }
+//           //   );
+//           doctor[0].isVerified = true;
+//           doctor[0].otp = undefined;
+//           doctor[0].otpExpiry = undefined;
+//           await doctor[0].save();
+//           res.status(200).json({
+//             success: true,
+//             message: "Otp verified success",
+//           });
+//         } else {
+//           res.status(400).json({
+//             success: false,
+//             message: "Otp is already expired",
+//           });
+//         }
+//       } else {
+//         res.status(400).json({
+//           success: false,
+//           message: "Invalid OTP",
+//         });
+//       }
+//     } else {
+//       res.status(404).json({
+//         success: false,
+//         message: "No Doctors found",
+//       });
+//     }
+//   } catch (e) {
+//     console.log(e);
+//   }
+// };
 
 const loginDoctor = async (req, res) => {
   const { email, password } = req.body;
